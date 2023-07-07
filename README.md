@@ -36,7 +36,7 @@ python3 Model/parse_embeddings.py --input Data/Sample/Chromosome/chromosome_samp
 2. Train the model with 
 
 ```
-python3 Model/train.py --plasmids plsdb.pkl --chromosomes bacteria.pkl --output model.pt
+python3 Model/train.py --plasmids Data/Sample/Plasmid/plsdb_sample.pkl --chromosomes Data/Sample/Chromosome/chromosome_sample.pkl --output model.pt
 ```
 
 ### Classification
@@ -44,7 +44,7 @@ python3 Model/train.py --plasmids plsdb.pkl --chromosomes bacteria.pkl --output 
 To classify your sets of embeddings, simply run
 
 ```
-python3 src/models/classify.py --plasmids plsdb_sample.h5 --model model.pt --output plsdb_sample_classified.h5
+python3 classify.py --input Data/Sample/Plasmid/plsdb_sample.pkl --model model.pt --output plsdb_sample_classified.tsv
 ```
 
 #### Output

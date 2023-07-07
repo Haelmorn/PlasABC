@@ -8,19 +8,19 @@ from torch.utils.data import DataLoader
 
 # Training settings,
 parser = argparse.ArgumentParser(description='PlasABC - attention based plasmid classifier')
-parser.add_argument('--epochs', type=int, default=10, metavar='N',
+parser.add_argument('-e', '--epochs', type=int, default=10, metavar='N',
                     help='number of epochs to train (default: 10)')
-parser.add_argument('--lr', type=float, default=0.0001, metavar='LR',
+parser.add_argument('-l', '--lr', type=float, default=0.0001, metavar='LR',
                     help='learning rate (default: 0.0001)')
-parser.add_argument('--seed', type=int, default=1, metavar='S',
+parser.add_argument('-s', '--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
-parser.add_argument('--plasmid_file', type=str, required=True,
+parser.add_argument('-p', '--plasmid', type=str, required=True,
                     help='Path to pickled plasmid protein embeddings')
-parser.add_argument('--chr_file', type=str, required=True,
+parser.add_argument('-c', '--chromosomes', type=str, required=True,
                     help='Path to pickled chromosome protein embeddings')
-parser.add_argument('--model_file', type=str,
+parser.add_argument('-m', '--model_file', type=str,
                     help='Path to save trained model')
 
 args = parser.parse_args()
