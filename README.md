@@ -33,11 +33,26 @@ and
 python3 Model/parse_embeddings.py --input Data/Sample/Chromosome/chromosome_sample.h5 --output Data/Sample/Chromosome/chromosome_sample.pkl
 ```
 
-2. Train the model with 
+The input files are as follows:
+- `plsdb_sample.h5` - embeddings of plasmid proteins, obtained from ProtTrans model
+- `chromosome_sample.h5` - embeddings of chromosome proteins, obtained from ProtTrans model
+
+The output files are as follows:
+- `plsdb_sample.pkl` - embeddings of plasmid proteins, sorted and saved in a format that can be used by the model
+- `chromosome_sample.pkl` - embeddings of chromosome proteins, sorted and saved in a format that can be used by the model
+
+1. Train the model with 
 
 ```
 python3 Model/train.py --plasmids Data/Sample/Plasmid/plsdb_sample.pkl --chromosomes Data/Sample/Chromosome/chromosome_sample.pkl --output model.pt
 ```
+
+The input files are as follows:
+- `plsdb_sample.pkl` - embeddings of plasmid proteins, as obtained from `parse_embeddings.py`
+- `chromosome_sample.pkl` - embeddings of chromosome proteins, as obtained from `parse_embeddings.py`
+
+The output file is as follows:
+- `model.pt` - model weights for `PlasABC` model, used by `classify.py`
 
 ### Classification
 
@@ -47,6 +62,9 @@ To classify your sets of embeddings, simply run
 python3 classify.py --input Data/Sample/Plasmid/plsdb_sample.pkl --model model.pt --output plsdb_sample_classified.tsv
 ```
 
-#### Output
+The input files are as follows:
+- `plsdb_sample.pkl` - embeddings of plasmid proteins, obtained by predicting CDSs in a set of sequences, and then obtaining embeddings of the predicted proteins with ProtTrans model, and then parsing the embeddings with `parse_embeddings.py`
+- `model.pt` - model weights for `PlasABC` model, obtained by training the model with `train.py` or by downloading the pre-trained model from [XXXXX]()
 
-The output file is a tab-delimited file with `contig_id` in one column, `classification_result` and `prediction`. The `prediction` is a boolean value, indicating whether the contig is classified as plasmid or not. The `classification_result` is the probability of the contig being a plasmid, as calculated by the model.
+The output file is as follows:
+- `plsdb_sample_classified.tsv` - tab-delimited file with `contig_id` in one column, `classification_result` and `prediction`. The `prediction` is a boolean value, indicating whether the contig is classified as plasmid or not. The `classification_result` is the probability of the contig being a plasmid, as calculated by the model.

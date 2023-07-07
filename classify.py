@@ -9,17 +9,17 @@ import pandas as pd
 
 
 parser = argparse.ArgumentParser(description='PlasABC - attention based plasmid classifier')
-parser.add_argument('--input', type=str, required=True,
+parser.add_argument('-i', '--input', type=str, required=True,
                     help='Path to pickled protein embeddings')
-parser.add_argument('--model', type=str, required=True,
+parser.add_argument('-m', '--model', type=str, required=True,
                     help='Path to trained plasABC model')
-parser.add_argument('--output', type=str, required=True,
+parser.add_argument('-o', '--output', type=str, required=True,
                     help='Path to output file')
-parser.add_argument('--threshold', type=float, default=0.5,
+parser.add_argument('-t', '--threshold', type=float, default=0.5,
                     help='Threshold for plasmid classification (default: 0.5)')
 parser.add_argument('--cuda', action='store_true', default=False,
                     help='Use GPU for classification')
-parser.add_argument('--attention_output', type=str, default=None,
+parser.add_argument('-a', '--attention_output', type=str, default=None,
                     help='Path to output file for attention weights (default: None)')
 
 args = parser.parse_args()
