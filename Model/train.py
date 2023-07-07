@@ -10,58 +10,70 @@ from torch.utils.data import DataLoader
 parser = argparse.ArgumentParser(description='PlasABC - attention based plasmid classifier')
 parser.add_argument('-e', '--epochs', type=int, default=10, metavar='N',
                     help='number of epochs to train (default: 10)')
-parser.add_argument('-l', '--lr', type=float, default=0.0001, metavar='LR',
+parser.add_argument('-l', '--learning_rate', type=float, default=0.0001, metavar='LR',
                     help='learning rate (default: 0.0001)')
-parser.add_argument('-s', '--seed', type=int, default=1, metavar='S',
+parser.add_argument('-s', '--random_seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
-parser.add_argument('--no-cuda', action='store_true', default=False,
+parser.add_argument('--no_cuda', action='store_true', default=False,
                     help='disables CUDA training')
-parser.add_argument('-p', '--plasmid', type=str, required=True,
+parser.add_argument('-p', '--plasmid_embeddings', type=str, required=True,
                     help='Path to pickled plasmid protein embeddings')
-parser.add_argument('-c', '--chromosomes', type=str, required=True,
+parser.add_argument('-c', '--chromosome_embeddings', type=str, required=True,
                     help='Path to pickled chromosome protein embeddings')
-parser.add_argument('-m', '--model_file', type=str,
+parser.add_argument('-m', '--model_path', type=str,
                     help='Path to save trained model')
 
+# parse the arguments
 args = parser.parse_args()
+
+# set CUDA flag
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
-torch.manual_seed(args.seed)
-if not args.no_cuda and torch.cuda.is_available():
-    torch.cuda.manual_seed(args.seed)
+
+# set manual seed for torch
+torch.manual_seed(args.random_seed)
+
+# set seed for CUDA and print GPU info if CUDA is available
+if args.cuda:
+    torch.cuda.manual_seed(args.random_seed)
     print(f'Using GPU: {torch.cuda.get_device_name()}')
 
 
 def main():
-    print('Load Train and Test Set')
-    data, labels = load_pickled_embeddings(args.plasmid_file, args.chr_file)
+    # load embeddings from pickled files
+    print('Loading training and testing sets...')
+    data, labels = load_pickled_embeddings(args.plasmid_embeddings, args.chromosome_embeddings)
 
-    print("Splitting into train and test sets")
-    X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=args.seed)
+    # split data into training and testing sets
+    print("Splitting data into training and testing sets...")
+    data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size=0.2, random_state=args.random_seed)
 
-    print("Creating DataLoaders")
-    train_dataset = ProteinDataset(X_train, y_train)
-    test_dataset = ProteinDataset(X_test, y_test)
+    # create data loaders for training and testing datasets
+    print("Creating DataLoaders...")
+    train_dataset = ProteinDataset(data_train, labels_train)
+    test_dataset = ProteinDataset(data_test, labels_test)
 
     train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-    print('Initialising PlasABC model')
+    # initialize PlasABC model
+    print('Initializing PlasABC model...')
     model = PlasABC()
     if args.cuda:
-        model.cuda()
+        model.cuda()  # move model to GPU if CUDA is available
 
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    # define optimizer
+    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
-    print('Training PlasABC model')
-
-    for epoch in range(1, args.epochs + 1):
+    # training loop
+    print('Training PlasABC model...')
+    for epoch in range(args.epochs):
         model.train()
         train_loss = 0.
         train_acc=0.
         for data, label in train_loader:
             data = data.squeeze(0)
-            if torch.cuda.is_available():
+            if args.cuda:
                 data, label = data.cuda(), label.cuda()
             data, label = torch.autograd.Variable(data), torch.autograd.Variable(label)
             optimizer.zero_grad()
@@ -81,7 +93,7 @@ def main():
         with torch.no_grad():
             for data, label in test_loader:
                 data = data.squeeze(0)
-                if torch.cuda.is_available():
+                if args.cuda:
                     data, label = data.cuda(), label.cuda()
                 data, label = torch.autograd.Variable(data), torch.autograd.Variable(label)
                 loss, acc, _, _,_ = model.calculate_objective(data, label)
@@ -95,9 +107,10 @@ def main():
     print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
     print(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
 
-    if args.model_file:
-        print(f'Saving model to {args.model_file}')
-        torch.save(model.state_dict(), args.model_file)
+    # save the model if path is provided
+    if args.model_path:
+        print(f'Saving model to {args.model_path}')
+        torch.save(model.state_dict(), args.model_path)
 
 if __name__ == '__main__':
     main()
