@@ -68,3 +68,20 @@ The input files are as follows:
 
 The output file is as follows:
 - `plsdb_sample_classified.tsv` - tab-delimited file with `contig_id` in one column, `classification_result` and `prediction`. The `prediction` is a boolean value, indicating whether the contig is classified as plasmid or not. The `classification_result` is the probability of the contig being a plasmid, as calculated by the model.
+
+# TODO
+
+- [ ] Train the model on full-size datasets
+- [ ] Add instructions on how to replicate the training process for full-size datasets
+- [ ] Add a way to download the pre-trained model
+- [ ] Write tests for helper functions
+- [ ] Test full-scale model on real data
+- [ ] Benchmark the model against other plasmid classification tools (Get ROC, AUC, etc.)
+- [ ] Write a paper
+- [ ] (Optional) Add a way to download the full-size datasets
+- [ ] (Future prospect) Train the model to classify plasmids into incompatibility groups (EvoMIL AttentionMC model-like)
+- [ ] (Future prospect) Train the model to find plasmids in draft genomes of ESKAPE pathogens
+
+# License
+
+MIT License (see `LICENSE` file)
